@@ -40,7 +40,7 @@
 
 
 -- Display all columns for all customers
-SELECT * FROM SalesLT.Customer
+SELECT * FROM SalesLT.Customer;
 
 -- Display customer name fields
 SELECT Title, FirstName, MiddleName, LastName, Suffix
@@ -54,10 +54,10 @@ SELECT Salesperson, Title + ' ' + LastName AS CustomerName, Phone
 FROM SalesLT.Customer;
 
 SELECT Salesperson, Title + ' ' + LastName AS CustomerName, Phone
-FROM SalesLT.Customer
+FROM SalesLT.Customer;
 
 SELECT SalesPerson, Title + ' ' + LastName AS CustomerName, Phone
-FROM SalesLT.Customer 
+FROM SalesLT.Customer;
 
 ---CHALLENGE 2
 
@@ -65,13 +65,13 @@ Select CAST(CustomerID AS varchar) + ': ' + CompanyName AS CustomerCompanies
 From SalesLT.Customer;
 
 Select SalesOrderNumber + '( ' + STR(RevisionNumber, 1) + ')' AS OrderRevision, CONVERT(nvarchar(30), OrderDate, 102)
-FROM SalesLT.SalesOrderHeader
+FROM SalesLT.SalesOrderHeader;
 
 ---- Challenge three
 
 --1.
 Select Title + ' ' + FirstName + ' ' + ISNULL(MiddleName + ' ', '') + LastName AS CustomerInfo
-FROM SalesLT.Customer
+FROM SalesLT.Customer;
 
 UPDATE SalesLT.Customer
 SET EmailAddress = NULL
@@ -79,7 +79,7 @@ WHERE CustomerID % 7 = 1;
 
 
 SELECT CustomerID, ISNULL(EmailAddress+ ' ', Phone) AS PrimaryContact
-FROM SalesLT.Customer
+FROM SalesLT.Customer;
 
 UPDATE SalesLT.SalesOrderHeader
 SET ShipDate = NULL
@@ -90,20 +90,20 @@ SELECT SalesOrderID, OrderDate,
 		WHEN ShipDate is Null THEN 'Awaiting Shipment'
 		ELSE 'Shipped'
 	END AS ShippingStatus
-From SalesLT.SalesOrderHeader
+From SalesLT.SalesOrderHeader;
 
 -- Note -- WITH TIES NEEDS TO BE USED WITH AN ORDER BY
 
 --SELECT TOP (10) WITH TIES SalesPerson , FirstName
 FROM SalesLT.Customer
-ORDER BY SalesPerson Desc
+ORDER BY SalesPerson Desc;
 
 --OFFSET --DOES NOT WORK WITH TOP
 
 SELECT SalesPerson , FirstName
 FROM SalesLT.Customer
 ORDER BY SalesPerson Desc
-OFFSET 10 ROW
+OFFSET 10 ROW;
 
 --OFFSET BY 500, BUT ONLY SHOWING 20 TOTAL
 
@@ -111,7 +111,7 @@ SELECT SalesPerson , FirstName
 FROM SalesLT.Customer
 ORDER BY SalesPerson Desc
 OFFSET 500 ROW
-FETCH FIRST 20 ROWS ONLY
+FETCH FIRST 20 ROWS ONLY;
 
 
 --USING DISTINCT, FETCH NEEDS OFFSET TO WORK
@@ -120,18 +120,18 @@ SELECT DISTINCT ISNULL(ProductID, 'NULL') AS PRODUCT
 FROM SalesLT.SalesOrderDetail
 ORDER BY Product
 OFFSET 1 ROW
-FETCH FIRST 20 ROWS ONLY
+FETCH FIRST 20 ROWS ONLY;
 
 --DISTINCT WITH TOP 
 SELECT DISTINCT TOP 5 ISNULL(ProductId, 'null') AS Product
-FROM SalesLT.SalesOrderDetail
+FROM SalesLT.SalesOrderDetail;
 
 --Skipping Sections
 SELECT SalesOrderID AS OrderNumber
 FROM SalesLT.SalesOrderDetail
 ORDER BY OrderNumber
 OFFSET 0 ROWS
-FETCH NEXT 100 ROWS ONLY
+FETCH NEXT 100 ROWS ONLY;
 
 ---------
 --Section-1 - Module 2-- Video 4
@@ -153,15 +153,15 @@ FETCH NEXT 100 ROWS ONLY
 SELECT Name, Color, Size FROM SalesLT.Product WHERE ProductModelId >= 6;
 
 -- _ is any one character, % is any comination of any characters
-SELECT ProductNumber, Name, Color, Size FROM SalesLT.Product WHERE ProductNumber LIKE 'FR-__2%58'
+SELECT ProductNumber, Name, Color, Size FROM SalesLT.Product WHERE ProductNumber LIKE 'FR-__2%58';
 
 
 SELECT ProductNumber, Name, Color, Size FROM SalesLT.Product WHERE ProductNumber LIKE 'FR-_[0-9][0-9]_-[0-9][0-9]';
 
-SELECT Name FROM SalesLT.Product WHERE SellEndDate IS NOT NUll
+SELECT Name FROM SalesLT.Product WHERE SellEndDate IS NOT NUll;
 
 --ISO DATE FORMAT IS STANDARD - YEAR, MONTH, DAY
-SELECT Name FROM SalesLT.Product WHERE SellEndDate BETWEEN '2006/1/1' AND '2016/12/31'
+SELECT Name FROM SalesLT.Product WHERE SellEndDate BETWEEN '2006/1/1' AND '2016/12/31';
 
 --Selecting from a list of items
 SELECT ProductCategoryID FROM SalesLT.Product WHERE ProductCategoryID IN (5, 6, 7)
@@ -170,7 +170,6 @@ ORDER BY ProductCategoryID DESC;
 SELECT ProductCategoryID, SellEndDate From SalesLT.Product WHERE ProductCategoryID IN (5,6,7) AND SellEndDate IS NULL;
 
 SELECT ProductCategoryID, SellEndDate From SalesLT.Product WHERE ProductNumber LIKE 'FR%' OR (ProductCategoryID IN (5,6,7) AND SellEndDate IS NULL);
-
 
 
 --- SECTION 2 ---
@@ -192,7 +191,7 @@ INNER JOIN SalesLT.SalesOrderDetail as od
 ON oh.SalesOrderID = od.SalesOrderID
 INNER JOIN SalesLT.Product AS p
 ON od.ProductID = p.ProductID
-ORDER BY oh.OrderDate, oh.SalesOrderId, Od.SalesOrderDetailId
+ORDER BY oh.OrderDate, oh.SalesOrderId, Od.SalesOrderDetailId;
 
 SELECT oh.OrderDate, oh.SalesOrderNumber, p.Name AS ProductName, od.OrderQty, od.UnitPrice, od.LineTotal
 FROM SalesLT.SalesOrderHeader as oh
@@ -235,13 +234,13 @@ ON H.CustomerID = C.CustomerID;
 
 --1
 SELECT Distinct City, StateProvince
-FROM SalesLT.Address
+FROM SalesLT.Address;
 
 --2
 SELECT TOP 10 PERCENT Name, Weight 
 FROM SalesLT.Product
 WHERE Weight is not NULL
-ORDER BY WEIGHT DESC
+ORDER BY WEIGHT DESC;
 
 --3
 SELECT Name, Weight
@@ -249,14 +248,14 @@ FROM SalesLT.Product
 WHERE Weight IS NOT NULL
 ORDER BY Weight DESC
 OFFSET 10 ROWS
-FETCH FIRST 100 ROWS ONLY
+FETCH FIRST 100 ROWS ONLY;
 
 --Challenge 2
 
 --1
 SELECT Name, Color, Size
 FROM SalesLT.Product
-WHERE ProductModelId = 1
+WHERE ProductModelId = 1;
 
 --2
 SELECT ProductNumber, Name
@@ -266,7 +265,7 @@ WHERE Color in('black', 'white', 'red') AND Size in('S', 'M');
 --3
 SELECT ProductNumber, Name
 From SalesLT.Product
-WHERE ProductNumber Like 'BK-%'
+WHERE ProductNumber Like 'BK-%';
 
 --4
 SELECT ProductNumber, Name, ListPrice
@@ -281,7 +280,7 @@ FROM SalesLT.Employee
 UNION
 SELECT FirstName
 FROM SalesLT.Customer
-ORDER BY FirstName
+ORDER BY FirstName;
 
 --UNION ALL
 SELECT EmployeeName as FirstName
@@ -289,7 +288,7 @@ FROM SalesLT.Employee
 UNION ALL
 SELECT FirstName
 FROM SalesLT.Customer
-ORDER BY FirstName
+ORDER BY FirstName;
 
 -- UNION ALL with TYPE
 SELECT EmployeeName AS FirstName, 'Employee' AS Type
@@ -297,7 +296,7 @@ FROM SalesLT.Employee
 UNION ALL
 SELECT FirstName, 'Customer' --Uses first reference to Type, since it's the third column
 FROM SalesLT.Customer
-ORDER BY FirstName
+ORDER BY FirstName;
 
 --INTERSECT --Find records that exist in both tables
 --EXCEPT --Find items that occur in one but DO NOT occur in another
@@ -308,14 +307,14 @@ FROM SalesLT.Customer
 INTERSECT
 SELECT ProductID
 FROM SalesLT.Product
-ORDER BY ProductID
+ORDER BY ProductID;
 
 --EXCEPT --Customers who have never purchased an item. 
 SELECT CustomerID AS Customer
 FROM SalesLT.Customer
 EXCEPT
 SELECT CustomerID
-FROM SalesLT.SalesOrderHeader
+FROM SalesLT.SalesOrderHeader;
 
 --EXCEPT --Items that have never been sold.
 SELECT ProductID
@@ -323,7 +322,7 @@ FROM SalesLT.Product
 EXCEPT
 SELECT ProductID AS Product
 FROM SalesLT.SalesOrderDetail
-ORDER BY ProductID
+ORDER BY ProductID;
 
 --Lab4 Challenge 1
 --1.1
@@ -363,7 +362,7 @@ ON C.CustomerID = CA.CustomerID
 JOIN SalesLT.Address as A
 ON CA.AddressID = A.AddressID
 WHERE CA.AddressType = 'Shipping'
-ORDER BY C.CompanyName, AddressType
+ORDER BY C.CompanyName, AddressType;
 
 --Challenge 2
 --2.1
@@ -423,5 +422,161 @@ WHERE CA.AddressType = 'Shipping';
 -- Modify the previous query to only include only product groups with a total sales value greater than $20,000.
 
 --1.1 
-SELECT UPPER(CONCAT(P.ProductID, P.Name))
-FROM SalesLT.Product AS p
+SELECT UPPER(CONCAT(P.ProductID, ' ' , P.Name)) AS Product, ROUND(P.Weight, 1) AS ApproxWeight
+FROM SalesLT.Product AS P;
+
+--1.2
+SELECT YEAR(P.SellStartDate) AS SellStartYear, DATENAME(mm, P.SellStartDate) AS SellStartMonth
+FROM SalesLT.Product AS P;
+
+--1.3
+SELECT YEAR(P.SellStartDate) AS SellStartYear, DATENAME(mm, P.SellStartDate) AS SellStartMonth, LEFT(P.ProductID,2) AS ID
+FROM SalesLT.Product AS P;
+
+--1.4
+SELECT YEAR(SellStartDate) AS SellStartYear, DATENAME(mm, SellStartDate) AS SellStartMonth, LEFT(ProductID,2) AS ID, Size
+FROM SalesLT.Product
+WHERE ISNUMERIC(Size) = 1;
+
+--2.1
+SELECT CompanyName, 
+		TotalDue AS Revenue,
+		RANK() OVER (ORDER BY OH.TotalDue DESC) AS Ranking
+FROM SalesLT.SalesOrderHeader AS OH
+JOIN SalesLT.Customer AS C
+ON OH.CustomerID = C.CustomerID;
+
+--3.1
+--Product Names, Total Revenue, Total Revenue calculated as sum of LineTotal, SalesOrderDetail Desc Order
+SELECT P.Name,
+		SUM(SOD.LineTotal) AS TotalRevenue
+FROM SalesLT.SalesOrderDetail AS SOD
+JOIN SalesLT.Product AS P
+ON SOD.ProductID = P.ProductID
+GROUP BY P.Name
+ORDER BY TotalRevenue DESC;
+
+--3.2
+SELECT Name,SUM(LineTotal) AS TotalRevenue
+FROM SalesLT.SalesOrderDetail AS SOD
+JOIN SalesLT.Product AS P
+ON SOD.ProductID = P.ProductID
+WHERE P.ListPrice > 1000
+GROUP BY P.Name
+ORDER BY TotalRevenue DESC;
+
+--3.3 -- Displays Total Revenue for every item costing more than 2000. Note - Name can be listed even though it's not an aggregate since that's what it's being grouped by. 
+SELECT P.Name, SUM(LineTotal) AS TotalRevenue
+FROM SalesLT.SalesOrderDetail AS SOD
+JOIN SalesLT.Product AS P
+ON SOD.ProductID = P.ProductID
+WHERE P.ListPrice > 1000
+GROUP BY P.Name
+HAVING SUM(LineTotal) > 2000
+ORDER BY TotalRevenue DESC;
+
+-- Displays Total Revenue HAVING (if greater than 2000) of all items where list price. 
+SELECT P.ListPrice, SUM(LineTotal) AS TotalRevenue
+FROM SalesLT.SalesOrderDetail AS SOD
+JOIN SalesLT.Product AS P
+ON SOD.ProductID = P.ProductID
+WHERE P.ListPrice > 1000
+GROUP BY P.ListPrice
+HAVING SUM(LineTotal) > 2000
+ORDER BY TotalRevenue DESC;
+
+--Gets list prices for all of the products
+SELECT Name, P.ListPrice
+FROM SalesLT.SalesOrderDetail AS SOD
+JOIN SalesLT.Product AS P
+ON SOD.ProductID = P.ProductID
+WHERE P.ListPrice > 1000;
+
+--Lists * Customers grouped by State and Then City
+-- NOTE - Non-aggregate values can be displayed (State, City) as long as they are included in 'Group by'
+SELECT COUNT(C.CustomerID) AS CustomerCount, A.City AS CustomerCity, A.StateProvince AS CustomerState
+FROM SalesLT.CustomerAddress AS CA
+JOIN SalesLT.Customer AS C
+ON CA.CustomerID = C.CustomerID
+JOIN SalesLT.Address AS A
+ON CA.AddressID = A.AddressID
+GROUP BY StateProvince, City;
+
+-- SUBQUERIES -- SECTION 3, Module 6
+SELECT MAX(UnitPrice)
+FROM SalesLT.SalesOrderDetail -- Results in 1467.01 added below
+
+SELECT * FROM SalesLT.Product
+WHERE ListPrice > 1467.01;
+
+-- Alternatively - Use the first query above inside of the second query 
+SELECT * FROM SalesLT.Product
+WHERE ListPrice > 
+(SELECT MAX(UnitPrice)
+FROM SalesLT.SalesOrderDetail);
+
+--Correlated Subquery
+--Displays the most recent order for any given customer
+SELECT CustomerID, SalesOrderId, OrderDate
+FROM SalesLT.SalesOrderHeader AS SOH1
+WHERE OrderDate = 
+(SELECT MAX(OrderDate)
+FROM SalesLT.SalesOrderHeader AS SOH2
+WHERE SOH1.OrderDate = SOH2.OrderDate);
+
+--Challenge 1: Retrieve Product Price Information
+--Adventure Works products each have a standard cost price that indicates the cost of manufacturing the product, and a list price that indicates the recommended selling price for the product. This data is stored in the SalesLT.Product table. Whenever a product is ordered, the actual unit price at which it was sold is also recorded in the SalesLT.SalesOrderDetail table. You must use subqueries to compare the cost and list prices for each product with the unit prices charged in each sale.
+--Tip: Review the documentation for subqueries in Subquery Fundamentals.
+--1. Retrieve products whose list price is higher than the average unit price
+--Retrieve the product ID, name, and list price for each product where the list price is higher than the average unit price for all products that have been sold.
+
+SELECT ProductID, Name, ListPrice
+FROM SalesLT.Product AS P
+WHERE ListPrice > 
+(SELECT AVG(UnitPrice) 
+FROM SalesLT.SalesOrderDetail AS SOD)
+ORDER BY ProductID;
+
+--2. Retrieve Products with a list price of $100 or more that have been sold for less than $100
+--Retrieve the product ID, name, and list price for each product where the list price is $100 or more, and the product has been sold for less than $100.
+
+SELECT ProductID, Name, ListPrice
+FROM SalesLT.Product
+WHERE ProductID IN	
+(SELECT ProductID
+FROM SalesLT.SalesOrderDetail
+WHERE ListPrice >= 100
+AND UnitPrice < 100)
+
+--3. Retrieve the cost, list price, and average selling price for each product
+--Retrieve the product ID, name, cost, and list price for each product along with the average unit price for which that product has been sold.
+
+SELECT ProductID, Name, StandardCost AS Cost, ListPrice, 
+	(SELECT AVG(UnitPrice)
+	FROM SalesLT.SalesOrderDetail AS SOD
+	WHERE SOD.ProductID = P.ProductId) AS AverageCost
+FROM SalesLT.Product AS P
+
+--4. Retrieve products that have an average selling price that is lower than the cost
+--Filter your previous query to include only products where the cost price is higher than the average selling price.
+SELECT ProductID, Name, StandardCost AS Cost, ListPrice, (SELECT AVG(UnitPrice)
+	FROM SalesLT.SalesOrderDetail AS SOD
+	WHERE SOD.ProductID = P.ProductId) AS AverageSellingCost
+FROM SalesLT.Product AS P
+WHERE StandardCost > 
+	(SELECT AVG(UnitPrice)
+	FROM SalesLT.SalesOrderDetail AS SOD
+	WHERE SOD.ProductID = P.ProductId)
+
+--Challenge 2: Retrieve Customer Information
+--The AdventureWorksLT database includes a table-valued user-defined function named dbo.ufnGetCustomerInformation. You must use this function to retrieve details of customers based on customer ID values retrieved from tables in the database.
+--Tip: Review the documentation for the APPLY operator in Using APPLY.
+--1. Retrieve customer information for all sales orders
+
+
+--Retrieve the sales order ID, customer ID, first name, last name, and total due for all sales orders from the SalesLT.SalesOrderHeader table and the dbo.ufnGetCustomerInformation function.
+--2. Retrieve customer address information
+--Retrieve the customer ID, first name, last name, address line 1 and city for all customers from the SalesLT.Address and SalesLT.CustomerAddress tables, and the dbo.ufnGetCustomerInformation function.
+
+
+
