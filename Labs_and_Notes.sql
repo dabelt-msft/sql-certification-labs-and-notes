@@ -573,10 +573,21 @@ WHERE StandardCost >
 --Tip: Review the documentation for the APPLY operator in Using APPLY.
 --1. Retrieve customer information for all sales orders
 
+SELECT SOH.SalesOrderId, SOH.CustomerID, CI.FirstName, CI.LastName, SOH.TotalDue
+FROM SalesLT.SalesOrderHeader AS SOH
+CROSS APPLY dbo.ufnGetCustomerInformation(SOH.CustomerID) AS CI
+ORDER BY SOH.SalesOrderID
+
 
 --Retrieve the sales order ID, customer ID, first name, last name, and total due for all sales orders from the SalesLT.SalesOrderHeader table and the dbo.ufnGetCustomerInformation function.
 --2. Retrieve customer address information
 --Retrieve the customer ID, first name, last name, address line 1 and city for all customers from the SalesLT.Address and SalesLT.CustomerAddress tables, and the dbo.ufnGetCustomerInformation function.
+SELECT CA.CustomerID, CI.FirstName, CI.LastName, A.AddressLine1
+FROM SalesLT.Address AS A
+JOIN SalesLT.CustomerAddress as CA
+ON A.AddressID = CA.AddressID
+CROSS APPLY dbo.ufnGetCustomerInformation(CA.CustomerID) AS CI
+ORDER BY CI.LastName;
 
 
 
