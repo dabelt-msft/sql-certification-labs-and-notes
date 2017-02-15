@@ -589,5 +589,32 @@ ON A.AddressID = CA.AddressID
 CROSS APPLY dbo.ufnGetCustomerInformation(CA.CustomerID) AS CI
 ORDER BY CI.LastName;
 
+-------- Module Seven --
+-------- Using Table Expressions
+
+--Creating a view
+CREATE VIEW SalesLT.vSalesOrders
+AS
+SELECT SOH.SalesOrderId, SOD.UnitPrice, P.Name AS ProductName, C.FirstName AS CustomerName
+FROM SalesLt.SalesOrderHeader AS SOH
+JOIN SalesLT.SalesOrderDetail AS SOD
+ON SOH.SalesOrderID = SOD.SalesOrderID
+JOIN SalesLT.Product AS P
+ON SOD.ProductID = P.ProductID
+JOIN SalesLT.Customer AS C
+ON SOH.CustomerID = C.CustomerID
+
+--Running newly created view
+SELECT ProductName, CustomerName
+FROM SalesLT.vSalesOrders
+
+--Combining new view with additonal query
+SELECT ProductName, ListPrice, AVG(UnitPrice) AS AverageUnitPrice
+FROM SalesLT.vSalesOrders AS vSO
+JOIN SalesLT.Product AS P
+ON vSO.ProductName = P.Name
+GROUP BY ListPrice, ProductName
+ORDER BY AverageUnitPrice
+
 
 
