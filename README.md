@@ -52,3 +52,9 @@ Covers:
   * Identifying Groupings in Results
   * Pivoting Data
   * Using PIVOT and UNPIVOT
+
+9.Modifying Data
+  * Inserting Data into tables
+  * Generating Identifiers
+  * Updating Data in Tables
+  * Deleting Data in Tables
