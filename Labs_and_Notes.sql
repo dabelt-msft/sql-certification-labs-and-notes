@@ -685,8 +685,7 @@ AS
 	UNION ALL
 
 	--Recursive Query
-	SELECT
-	E.ManagerID, E.EmployeeId, E.EmployeeName, Level + 1
+	SELECT E.ManagerID, E.EmployeeId, E.EmployeeName, Level + 1
 	FROM SalesLt.Employee AS E
 	INNER JOIN OrgReport AS O
 	ON E.ManagerID = O.EmployeeID
@@ -694,3 +693,67 @@ AS
 
 SELECT * FROM OrgReport
 OPTION (MAXRECURSION 3);
+
+
+
+--Challenge 1: Retrieve Product Information
+--Adventure Works sells many products that are variants of the same product model. You must write queries that retrieve information about these products
+--1. Retrieve product model descriptions
+--Retrieve the product ID, product name, product model name, and product model summary for each product from the SalesLT.Product table and the SalesLT.vProductModelCatalogDescription view.
+
+CREATE VIEW SalesLT.vProductModelCatologDescription
+AS
+SELECT ProductModelId, Name, CatalogDescription
+FROM SalesLT.ProductModel
+
+SELECT P.ProductId, P.Name, MCD.Name AS ModelName, MCD.Summary
+FROM SalesLT.Product AS P
+JOIN SalesLT.vProductModelCatalogDescription AS MCD
+ON P.ProductModelId = MCD.ProductModelId
+ORDER BY ProductId;
+
+SELECT * FROM SalesLT.vProductModelCatalogDescription;
+
+
+--2. Create a table of distinct colors
+--Tip: Review the documentation for Variables in Transact-SQL Language Reference.
+--Create a table variable and populate it with a list of distinct colors from the SalesLT.Product table. Then use the table variable to filter a query that returns the product ID, name, and color from the SalesLT.Product table so that only products with a color listed in the table variable are returned.
+
+DECLARE @colors AS TABLE (Color nvarchar(15))
+
+INSERT INTO @Colors
+SELECT DISTINCT Color
+FROM SalesLT.Product
+
+SELECT ProductID, Name, Color
+FROM SalesLT.Product
+WHERE Color IN (SELECT Color FROM @Colors)
+
+--3. Retrieve product parent categories
+--The AdventureWorksLT database includes a table-valued function named dbo.ufnGetAllCategories, which returns a table of product categories (for example ‘Road Bikes’) and parent categories (for example ‘Bikes’). Write a query that uses this function to return a list of all products including their parent category and category.
+
+
+SELECT C.ParentProductCategoryName AS ParentCategory,
+       C.ProductCategoryName AS Category,
+       P.ProductID, P.Name AS ProductName
+FROM SalesLT.Product AS P
+JOIN dbo.ufnGetAllCategories() AS C
+ON P.ProductCategoryID = C.ProductCategoryID
+ORDER BY ParentCategory, Category, ProductName;
+
+
+--Challenge 2: Retrieve Customer Sales Revenue
+--Each Adventure Works customer is a retail company with a named contact. You must create queries that return the total revenue for each customer, including the company and customer contact names.
+--1. Retrieve sales revenue by customer and contact
+--Retrieve a list of customers in the format Company (Contact Name) together with the total revenue for that customer. Use a derived table or a common table expression to retrieve the details for each sales order, and then query the derived table or CTE to aggregate and group the data.
+
+WITH CustomerSales(CompanyContact, SalesAmount)
+AS
+(SELECT CONCAT(c.CompanyName, CONCAT(' (' + c.FirstName + ' ', c.LastName + ')')), SOH.TotalDue
+ FROM SalesLT.SalesOrderHeader AS SOH
+ JOIN SalesLT.Customer AS c
+ ON SOH.CustomerID = c.CustomerID)
+SELECT CompanyContact, SUM(SalesAmount) AS Revenue
+FROM CustomerSales
+GROUP BY CompanyContact
+ORDER BY CompanyContact;
