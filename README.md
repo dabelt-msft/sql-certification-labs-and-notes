@@ -66,9 +66,10 @@ Covers:
   * Conditional Branching
   * Loops
   * Stored Procedures
+
 11.Error Handling and Transactions
   * Errors and Error messages
   * Raising Errors
   * Catching and Handling Errors
   * Introduction to Transactions
-  * Implementing explicit transactions 
+  * Implementing explicit transactions  
