@@ -58,3 +58,17 @@ Covers:
   * Generating Identifiers
   * Updating Data in Tables
   * Deleting Data in Tables
+
+10.Programming with Transact-SQL Fundamentals
+  * Batches
+  * Comments
+  * Variables
+  * Conditional Branching
+  * Loops
+  * Stored Procedures
+11.Error Handling and Transactions
+  * Errors and Error messages
+  * Raising Errors
+  * Catching and Handling Errors
+  * Introduction to Transactions
+  * Implementing explicit transactions 
