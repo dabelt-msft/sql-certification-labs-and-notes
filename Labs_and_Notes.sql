@@ -616,5 +616,81 @@ ON vSO.ProductName = P.Name
 GROUP BY ListPrice, ProductName
 ORDER BY AverageUnitPrice
 
+--Create function for defining customers by city
+--Once run, can be found in /Programmability/Functions/Table-valued\ Functions
+CREATE FUNCTION SalesLT.udfCustomersByCity
+(@City AS VARCHAR(20))
+RETURNS TABLE
+AS
+RETURN
+(SELECT C.FirstName, C.LastName, A.City
+FROM SalesLT.Customer AS C
+JOIN SalesLT.CustomerAddress AS CA
+ON C.CustomerID = CA.CustomerID
+JOIN SalesLT.Address AS A
+ON CA.AddressID = A.AddressID
+WHERE City = @City)
 
+SELECT * FROM SalesLT.udfCustomersByCity('Bellevue')
 
+SELECT Category, COUNT(ProductID) AS Products
+FROM
+	(SELECT P.ProductID, P.Name AS Product, C.Name AS Category
+	FROM SalesLT.Product AS P
+	JOIN SalesLT.ProductCategory AS C
+	ON P.ProductCategoryID = C.ProductCategoryID) AS ProdCats
+GROUP BY Category
+ORDER BY Category;
+
+--Recursive Query --Recursive Queries have large overhead- Use with small datasets 
+WITH OrgReport (ManagerID, EmployeeID, EmployeeName, Level)
+AS
+( 
+SELECT
+FROM HR.Employee AS E
+WHERE ManagerID IS NULL
+UNION ALL
+SELECT E.ManagerID, E.EmployeeID, EmployeeName, 0
+E.ManagerID, E.EmployeeId, E.EmployeeName, Level + 1
+FROM HR.Employee AS E
+INNER JOIN OrgReport AS O
+ON E.ManagerID = O.EmoloyeeID
+) 
+SELECT * FROM OrgReport
+OPTION (MAXRECURSION 3);
+
+WITH ProductsByCategory (ProductId, ProductName, Category)
+AS
+(
+	SELECT p.ProductId, p.Name, c.Name as Category
+	FROM SalesLT.Product AS P
+	JOIN SalesLT.ProductCategory AS C
+	ON P.ProductCategoryId = C.ProductCategoryId
+)
+
+SELECT Category, COUNT(ProductId) AS Products
+FROM ProductsByCategory
+GROUP BY Category
+ORDER BY Category
+
+--Recursive Query 2 ---works with Adventureworkslt
+WITH OrgReport (ManagerID, EmployeeID, EmployeeName, Level)
+AS
+( 
+	--Ancor Query - Base Case
+	SELECT E.ManagerID, E.EmployeeID, EmployeeName, 0
+	FROM SalesLT.Employee AS E
+	WHERE ManagerID IS NULL
+
+	UNION ALL
+
+	--Recursive Query
+	SELECT
+	E.ManagerID, E.EmployeeId, E.EmployeeName, Level + 1
+	FROM SalesLt.Employee AS E
+	INNER JOIN OrgReport AS O
+	ON E.ManagerID = O.EmployeeID
+) 
+
+SELECT * FROM OrgReport
+OPTION (MAXRECURSION 3);
