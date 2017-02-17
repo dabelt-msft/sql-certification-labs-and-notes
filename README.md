@@ -45,3 +45,10 @@ Covers:
   * Querying Table-valued Functions
   * Using Derived Tables
   * Using Common Table Expressions
+
+8.Grouping Sets and Pivoting Data
+  * Grouping Sets
+  * Roll Up and Cube
+  * Identifying Groupings in Results
+  * Pivoting Data
+  * Using PIVOT and UNPIVOT
