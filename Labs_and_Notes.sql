@@ -475,7 +475,7 @@ GROUP BY P.Name
 HAVING SUM(LineTotal) > 2000
 ORDER BY TotalRevenue DESC;
 
--- Displays Total Revenue HAVING (if greater than 2000) of all items where list price. 
+-- Displays Total Revenue HAVING (if greater than 2000) > all items where list price is greater than 1000. 
 SELECT P.ListPrice, SUM(LineTotal) AS TotalRevenue
 FROM SalesLT.SalesOrderDetail AS SOD
 JOIN SalesLT.Product AS P
@@ -856,6 +856,8 @@ INSERT SalesLT.CallLog -- "INTO" in "INSERT INTO" is optional
 VALUES
 (DEFAULT, 'adventure-works\pamela0', 1, '562-965-8007', NULL)
 
+SELECT * FROM SalesLT.CallLog
+
 --Challenge 1: Inserting Products
 --Each Adventure Works product is stored in the SalesLT.Product table, and each product has a unique ProductID identifier, which is implemented as an IDENTITY column in the SalesLT.Product table. Products are organized into categories, which are defined in the SalesLT.ProductCategory table. The products and product category records are related by a common ProductCategoryID identifier, which is an IDENTITY column in the SalesLT.ProductCategory table.
 --Tip: Review the documentation for INSERT in the Transact-SQL Language Reference.
@@ -925,3 +927,137 @@ WHERE ProductCategoryID =
 DELETE FROM SalesLT.ProductCategory
 WHERE ProductCategoryID =
 	(SELECT ProductCategoryID FROM SalesLT.ProductCategory WHERE Name = 'Bells and Horns');
+
+DECLARE @fy int;
+IF MONTH(GETDATE()) <= 6
+ SET @fy = YEAR(GETDATE());
+ELSE
+ SET @fy = YEAR(GETDATE())+1;
+SELECT * FROM SalesLT.SalesOrder WHERE FY = @fy
+
+--Challenge 1: Creating scripts to insert sales orders
+--You want to create reusable scripts that make it easy to insert sales orders. You plan to create a script to insert the order header record, and a separate script to insert order detail records for a specified order header. Both scripts will make use of variables to make them easy to reuse.
+--1. Write code to insert an order header
+--Your script to insert an order header must enable users to specify values for the order date, due date, and customer ID. The SalesOrderID should be generated from the next value for the SalesLT.SalesOrderNumber sequence and assigned to a variable. The script should then insert a record into the SalesLT.SalesOrderHeader table using these values and a hard-coded value of ‘CARGO TRANSPORT 5’ for the shipping method with default or NULL values for all other columns.
+--After the script has inserted the record, it should display the inserted SalesOrderID using the PRINT command.
+
+DECLARE @OrderDate datetime = GETDATE();
+DECLARE @DueDate datetime = DATEADD(dd, 7, GETDATE());
+DECLARE @CustomerID int = 1;
+DECLARE @OrderID int;
+
+SET @OrderID = NEXT VALUE FOR SalesLT.SalesOrderNumber;
+
+INSERT INTO SalesLT.SalesOrderHeader (SalesOrderID, OrderDate, DueDate, CustomerID, ShipMethod)
+VALUES
+(@OrderID, @OrderDate, @DueDate, @CustomerID, 'CARGO TRANSPORT 5');
+
+PRINT @OrderID;
+
+--2. Write code to insert an order detail
+--The script to insert an order detail must enable users to specify a sales order ID, a product ID, a quantity, and a unit price. It must then check to see if the specified sales order ID exists in the SalesLT.SalesOrderHeader table. If it does, the code should insert the order details into the SalesLT.SalesOrderDetail table (using default values or NULL for unspecified columns). If the sales order ID does not exist in the SalesLT.SalesOrderHeader table, the code should print the message ‘The order does not exist’. You can test for the existence of a record by using the EXISTS predicate.
+--Test your code with the following values:
+
+DECLARE @SalesOrderID int
+DECLARE @ProductID int = 760;
+DECLARE @Quantity int = 1;
+DECLARE @UnitPrice money = 782.99;
+
+SET @SalesOrderID = 0; -- test with the order ID generated for the sales order header inserted above
+
+IF EXISTS (SELECT * FROM SalesLT.SalesOrderHeader WHERE SalesOrderID = @SalesOrderID)
+BEGIN
+	INSERT INTO SalesLT.SalesOrderDetail (SalesOrderID, OrderQty, ProductID, UnitPrice)
+	VALUES
+	(@SalesOrderID, @Quantity, @ProductID, @UnitPrice)
+END
+ELSE
+BEGIN
+	PRINT 'The order does not exist'
+END
+
+
+--Challenge 2
+--1.Write a while loop to update prices
+
+DECLARE @MarketAverage money = 2000;
+DECLARE @MarketMax money = 5000;
+DECLARE @AWMax money;
+DECLARE @AWAverage money;
+
+SELECT @AWAverage =  AVG(ListPrice), @AWMax = MAX(ListPrice)
+FROM SalesLT.Product
+WHERE ProductCategoryID IN
+	(SELECT DISTINCT ProductCategoryID
+	 FROM SalesLT.vGetAllCategories
+	 WHERE ParentProductCategoryName = 'Bikes');
+
+WHILE @AWAverage < @MarketAverage
+BEGIN
+   UPDATE SalesLT.Product
+   SET ListPrice = ListPrice * 1.1
+   WHERE ProductCategoryID IN
+	(SELECT DISTINCT ProductCategoryID
+	 FROM SalesLT.vGetAllCategories
+	 WHERE ParentProductCategoryName = 'Bikes');
+	  
+	SELECT @AWAverage =  AVG(ListPrice), @AWMax = MAX(ListPrice)
+	FROM SalesLT.Product
+	WHERE ProductCategoryID IN
+	(SELECT DISTINCT ProductCategoryID
+	 FROM SalesLT.vGetAllCategories
+	 WHERE ParentProductCategoryName = 'Bikes');
+
+   IF @AWMax >= @MarketMax
+      BREAK
+   ELSE
+      CONTINUE
+END
+PRINT 'New average bike price:' + CONVERT(varchar, @AWAverage);
+PRINT 'New maximum bike price:' + CONVERT(varchar, @AWMax);
+
+SELECT OrderQty * UnitPrice as Amount
+FROM SalesLT.SalesOrderDetail
+
+SELECT OrderQty * CAST(UnitPrice AS Money) as Amount
+FROM SalesLT.SalesOrderDetail
+
+SELECT ProductID, OrderQty * CONVERT(money, UnitPrice) AS Subtotal FROM SalesLT.SalesOrderDetail;
+
+SELECT ProductID, CONVERT(money, UnitPrice * OrderQty) AS Subtotal FROM SalesLT.SalesOrderDetail;
+
+SELECT * 
+FROM SalesLT.Customer
+
+SELECT FirstName + NULLIF(MiddleName, 'N.') + LastName
+FROM SalesLT.Customer
+
+SELECT FirstName, NULLIF(MiddleName, 'N.'), LastName
+FROM SalesLT.Customer
+
+SELECT City, CountryRegion
+FROM SalesLT.Address
+
+SELECT Name, ListPrice, ProductCategoryId FROM SalesLt.Product
+ORDER BY ProductCategoryID ASC, ListPrice DESC
+
+SELECT ShipDate
+FROM SalesLT.SalesOrderHeader
+WHERE ShipDate < '2009-06-08' and ShipDate >= '2007-06-08'
+
+SELECT SOD.ProductID, SOD.SalesOrderID, P.Name, SOH.OrderDate
+FROM SalesLT.SalesOrderHeader AS SOH
+RIGHT JOIN SalesLT.SalesOrderDetail AS SOD
+ON SOD.SalesOrderID = SOH.SalesOrderId
+RIGHT JOIN SalesLT.Product AS P
+ON SOD.ProductId = P.ProductID
+
+
+SELECT A.City, A.CountryRegion, SUM(o.TotalDue) AS Revenue
+FROM SalesLT.Customer AS c
+JOIN SalesLT.CustomerAddress AS CA
+ON C.CustomerId = CA.CustomerID
+JOIN SalesLT.Address AS A
+ON A.AddressID = CA.AddressID
+JOIN SalesLT.SalesOrderHeader AS o ON o.CustomerID = c.CustomerID
+GROUP BY GROUPING SETS (CountryRegion, (CountryRegion, City), ())
